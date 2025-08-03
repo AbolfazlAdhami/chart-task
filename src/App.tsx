@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Chart } from "./components/chart";
+import { Chart } from "./components/Chart";
 
 interface ChartData {
   title: string;

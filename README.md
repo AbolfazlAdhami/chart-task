@@ -1,69 +1,79 @@
-# React + TypeScript + Vite
+# Frontend Developer Technical Test
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+## Goal
 
-Currently, two official plugins are available:
+Build a React app that loads chart data from `data.json` and displays it using D3.js. The app should detect the chart type (single-series or multi-series) from the data format and render it.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## Requirements
 
-## Expanding the ESLint configuration
+### 1. Input Data
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+The application will receive chart definitions in the following format (provided in `data.json`):
 
-```js
-export default tseslint.config([
-  globalIgnores(['dist']),
+```
+[
   {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      ...tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      ...tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      ...tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
+    "title": "single series chart",
+    "data": [[timestamp, value]]
   },
-])
+  {
+    "title": "multi series chart",
+    "data": [[timestamp, [value1, value2, value3]]]
+  }
+]
+
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+- **Single-series chart:**
+    - `value` is a single number.
+    - Example: `[[53, -0.056], [58, null], [63, 0.112]]`
+- **Multi-series chart:**
+    - `value` is an array of multiple values (e.g., 3 values representing different cables).
+    - Example: `[[0, [34, 45, 75]], [10, [53, 84, 34]]]`
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+## 2. Chart Rendering Rules
 
-export default tseslint.config([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+- **Chart Type Detection:** Automatically detect chart type by checking if `value` is a number (single-series) or an array (multi-series).
+- **Single-Series Chart:**
+    - Render a single continuous line using D3.js.
+    - Skip any points where `value` is `null`.
+- **Multi-Series Chart:**
+    - Extract each of the three series from `value`.
+    - Render three continuous lines (one per series) in the same chart:
+        - First line: Blue
+        - Second line: Green
+        - Third line: Red
+    - For each line, skip only points where its own value is `null` (other lines should still render if they have valid data at that timestamp).
+- **Chart Titles:** Display the `title` above each chart.
+- **Styling:** No specific design or responsiveness is required. Focus on functionality.
+
+### 3. Implementation Details
+
+- Use React (JavaScript or TypeScript — candidate’s choice).
+- Use D3.js for rendering charts.
+- Loop through all chart objects in `data.json` and render them dynamically.
+- Code must be clean, readable, and maintainable.
+- You may use AI tools to accelerate your work, but **you must fully understand your code**.
+
+## Reviewer Checklist
+
+### Functionality
+
+- [ ]  Reads `data.json` correctly and processes all chart entries.
+- [ ]  Detects chart type (single vs multi) without hardcoding.
+- [ ]  Handles `null` values correctly (skips plotting them).
+- [ ]  Single-series chart: renders a correct D3 line chart.
+- [ ]  Multi-series chart: renders three correct D3 line charts in one chart with correct colors (Blue, Green, Red).
+- [ ]  Displays `title` above each chart.
+
+### Code Quality
+
+- [ ]  Code is modular (charts rendered by reusable components/functions).
+- [ ]  No unnecessary complexity or unused code.
+- [ ]  Variables, functions, and components have clear, descriptive names.
+- [ ]  Proper error handling for unexpected data (extra credit if added).
+
+### Performance & Logic
+
+- [ ]  Loops through all charts dynamically without manual chart-specific code.
+- [ ]  D3 rendering is correct and updates as expected.
